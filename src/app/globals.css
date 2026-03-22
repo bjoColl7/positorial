@@ -24,11 +24,11 @@
   }
 
   .gradient-warm {
-    background: linear-gradient(135deg, #fef7ed 0%, #fdf8f3 50%, #f4f7f4 100%);
+    background: linear-gradient(135deg, #faf5ff 0%, #fdf4ff 50%, #f4f7f4 100%);
   }
 
   .gradient-hero {
-    background: linear-gradient(160deg, #fef7ed 0%, #fdecd4 30%, #faf0e4 60%, #f4f7f4 100%);
+    background: linear-gradient(160deg, #faf5ff 0%, #f3e8ff 30%, #fae8ff 60%, #f4f7f4 100%);
   }
 
   .card-hover {
