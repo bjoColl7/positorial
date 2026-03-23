@@ -1,19 +1,13 @@
 import CategoryCard from "@/components/CategoryCard";
 import ArticleCard from "@/components/ArticleCard";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import HeroBackground from "@/components/HeroBackground";
+import StatsBar from "@/components/StatsBar";
+import FeaturedSpotlight from "@/components/FeaturedSpotlight";
+import HorizontalArticles from "@/components/HorizontalArticles";
 import Link from "next/link";
 
 const featuredArticles = [
-  {
-    title: "7 Money Habits That Changed My Financial Future",
-    excerpt:
-      "Small daily habits compound into massive results. These are the money habits that took me from paycheck to paycheck to building real wealth.",
-    category: "Money",
-    slug: "7-money-habits",
-    date: "Mar 18, 2026",
-    readTime: "6 min read",
-    categoryColor: "bg-primary-500 text-primary-700",
-  },
   {
     title: "The Morning Routine Science Says Actually Works",
     excerpt:
@@ -23,6 +17,8 @@ const featuredArticles = [
     date: "Mar 15, 2026",
     readTime: "8 min read",
     categoryColor: "bg-sage-500 text-sage-700",
+    thumbnailGradient: "from-sage-100 to-sage-200",
+    thumbnailIcon: "🧘",
   },
   {
     title: "Why Most Goal-Setting Fails (And What to Do Instead)",
@@ -33,47 +29,32 @@ const featuredArticles = [
     date: "Mar 12, 2026",
     readTime: "5 min read",
     categoryColor: "bg-warm-500 text-warm-700",
+    thumbnailGradient: "from-warm-100 to-warm-200",
+    thumbnailIcon: "🎯",
   },
   {
-    title: "How to Build an Emergency Fund From Scratch",
+    title: "Index Funds 101: The Simplest Way to Start Investing",
     excerpt:
-      "Starting from zero? No problem. A step-by-step guide to building your financial safety net, even on a tight budget.",
+      "You don't need to be a Wall Street expert. Learn how index funds work and why they're the go-to choice for long-term wealth building.",
     category: "Money",
-    slug: "emergency-fund-guide",
-    date: "Mar 9, 2026",
-    readTime: "7 min read",
+    slug: "index-funds-101",
+    date: "Feb 28, 2026",
+    readTime: "8 min read",
     categoryColor: "bg-primary-500 text-primary-700",
-  },
-  {
-    title: "The Anti-Diet Approach to Eating Well",
-    excerpt:
-      "Ditch restrictive diets for good. Discover intuitive, sustainable eating habits that nourish your body and mind without the guilt.",
-    category: "Health",
-    slug: "anti-diet-eating",
-    date: "Mar 6, 2026",
-    readTime: "6 min read",
-    categoryColor: "bg-sage-500 text-sage-700",
-  },
-  {
-    title: "Digital Minimalism: Reclaim Your Focus",
-    excerpt:
-      "Your phone isn't the enemy — your habits are. Practical strategies for using technology intentionally and getting your focus back.",
-    category: "Growth",
-    slug: "digital-minimalism",
-    date: "Mar 3, 2026",
-    readTime: "5 min read",
-    categoryColor: "bg-warm-500 text-warm-700",
+    thumbnailGradient: "from-primary-100 to-primary-200",
+    thumbnailIcon: "📈",
   },
 ];
 
 export default function Home() {
   return (
     <>
-      {/* Hero Section */}
-      <section className="gradient-hero">
-        <div className="section-padding py-20 md:py-32">
+      {/* Hero Section with background visual */}
+      <section className="relative min-h-[600px] flex items-center">
+        <HeroBackground />
+        <div className="section-padding py-24 md:py-36 relative z-10 w-full">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full border border-warm-200 mb-6 animate-fade-in-up">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full border border-primary-200 mb-6 animate-fade-in-up">
               <span className="w-2 h-2 rounded-full bg-sage-400 animate-pulse" />
               <span className="text-sm font-medium text-gray-600">
                 New articles every week
@@ -104,8 +85,14 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Stats / Credibility Bar */}
+      <StatsBar />
+
+      {/* Featured Article Spotlight (side-by-side) */}
+      <FeaturedSpotlight />
+
       {/* Categories Section */}
-      <section className="section-padding py-20">
+      <section className="section-padding py-20 bg-cream-50">
         <div className="text-center mb-12">
           <h2 className="font-display font-bold text-3xl md:text-4xl text-gray-900 mb-4">
             Explore Our Pillars
@@ -155,8 +142,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Articles */}
-      <section className="section-padding py-20 bg-warm-50/50">
+      {/* Latest Articles with thumbnails */}
+      <section className="section-padding py-20">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12">
           <div>
             <h2 className="font-display font-bold text-3xl md:text-4xl text-gray-900 mb-2">
@@ -178,7 +165,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Social Proof */}
+      {/* Horizontal Blog Articles */}
+      <div className="bg-cream-50">
+        <HorizontalArticles />
+      </div>
+
+      {/* Social Proof / Testimonials */}
       <section className="section-padding py-20">
         <div className="text-center mb-12">
           <h2 className="font-display font-bold text-3xl md:text-4xl text-gray-900 mb-4">
@@ -194,21 +186,27 @@ export default function Home() {
               quote: "Positorial helped me pay off $15K in debt in just 14 months. The budgeting articles are incredible.",
               name: "Sarah M.",
               role: "Teacher",
+              initials: "SM",
+              color: "bg-primary-100 text-primary-600",
             },
             {
               quote: "The health content is refreshingly evidence-based. No fads, no gimmicks — just what works.",
               name: "Marcus J.",
               role: "Software Engineer",
+              initials: "MJ",
+              color: "bg-sage-100 text-sage-600",
             },
             {
               quote: "The personal development articles changed my relationship with productivity. I'm doing more with less stress.",
               name: "Aisha K.",
               role: "Entrepreneur",
+              initials: "AK",
+              color: "bg-warm-100 text-warm-600",
             },
           ].map((testimonial) => (
             <div
               key={testimonial.name}
-              className="bg-white rounded-2xl p-8 border border-warm-100 shadow-sm"
+              className="bg-white rounded-2xl p-8 border border-cream-200 shadow-sm"
             >
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
@@ -220,18 +218,23 @@ export default function Home() {
               <p className="text-gray-600 text-sm leading-relaxed mb-6 italic">
                 &ldquo;{testimonial.quote}&rdquo;
               </p>
-              <div>
-                <p className="font-display font-semibold text-gray-900 text-sm">
-                  {testimonial.name}
-                </p>
-                <p className="text-gray-400 text-xs">{testimonial.role}</p>
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-full ${testimonial.color} flex items-center justify-center`}>
+                  <span className="text-xs font-bold">{testimonial.initials}</span>
+                </div>
+                <div>
+                  <p className="font-display font-semibold text-gray-900 text-sm">
+                    {testimonial.name}
+                  </p>
+                  <p className="text-gray-400 text-xs">{testimonial.role}</p>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Newsletter */}
+      {/* Newsletter with visual */}
       <NewsletterSignup />
     </>
   );
