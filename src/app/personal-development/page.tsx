@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import ArticleCard from "@/components/ArticleCard";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import { client } from "../../../sanity/lib/client";
+import { articlesByCategoryQuery } from "../../../sanity/lib/queries";
+import { formatArticleForCard, SanityArticle } from "../../../sanity/lib/helpers";
 
 export const metadata: Metadata = {
   title: "Personal Development",
@@ -8,7 +11,7 @@ export const metadata: Metadata = {
     "Mindset, habits, productivity, and purpose. Actionable growth strategies to become the best version of yourself.",
 };
 
-const devArticles = [
+const fallbackArticles = [
   {
     title: "Why Most Goal-Setting Fails (And What to Do Instead)",
     excerpt: "Goals are great, but systems are better. Learn the identity-based approach to personal development that top performers swear by.",
@@ -17,6 +20,8 @@ const devArticles = [
     date: "Mar 12, 2026",
     readTime: "5 min read",
     categoryColor: "bg-warm-500 text-warm-700",
+    thumbnailGradient: "from-warm-100 to-warm-200",
+    thumbnailIcon: "🎯",
   },
   {
     title: "Digital Minimalism: Reclaim Your Focus",
@@ -26,6 +31,8 @@ const devArticles = [
     date: "Mar 3, 2026",
     readTime: "5 min read",
     categoryColor: "bg-warm-500 text-warm-700",
+    thumbnailGradient: "from-warm-100 to-warm-200",
+    thumbnailIcon: "📵",
   },
   {
     title: "The Power of Journaling: A Beginner's Guide",
@@ -35,6 +42,8 @@ const devArticles = [
     date: "Feb 22, 2026",
     readTime: "6 min read",
     categoryColor: "bg-warm-500 text-warm-700",
+    thumbnailGradient: "from-warm-100 to-warm-200",
+    thumbnailIcon: "📓",
   },
   {
     title: "How to Build Confidence From the Inside Out",
@@ -44,6 +53,8 @@ const devArticles = [
     date: "Feb 15, 2026",
     readTime: "7 min read",
     categoryColor: "bg-warm-500 text-warm-700",
+    thumbnailGradient: "from-warm-100 to-warm-200",
+    thumbnailIcon: "💪",
   },
   {
     title: "Deep Work: How to Get More Done in Less Time",
@@ -53,6 +64,8 @@ const devArticles = [
     date: "Feb 8, 2026",
     readTime: "8 min read",
     categoryColor: "bg-warm-500 text-warm-700",
+    thumbnailGradient: "from-warm-100 to-warm-200",
+    thumbnailIcon: "🧠",
   },
   {
     title: "Finding Your Purpose: A Practical Framework",
@@ -62,6 +75,8 @@ const devArticles = [
     date: "Feb 1, 2026",
     readTime: "9 min read",
     categoryColor: "bg-warm-500 text-warm-700",
+    thumbnailGradient: "from-warm-100 to-warm-200",
+    thumbnailIcon: "🧭",
   },
 ];
 
@@ -75,7 +90,19 @@ const topics = [
   { label: "Creativity", count: 2 },
 ];
 
-export default function PersonalDevelopmentPage() {
+export const revalidate = 60;
+
+export default async function PersonalDevelopmentPage() {
+  let articles = fallbackArticles;
+  try {
+    const sanityArticles: SanityArticle[] = await client.fetch(articlesByCategoryQuery, { category: "personal-development" });
+    if (sanityArticles && sanityArticles.length > 0) {
+      articles = sanityArticles.map(formatArticleForCard);
+    }
+  } catch {
+    // Sanity not connected yet, use fallback
+  }
+
   return (
     <>
       {/* Hero */}
@@ -123,7 +150,7 @@ export default function PersonalDevelopmentPage() {
           Latest in Personal Development
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {devArticles.map((article) => (
+          {articles.map((article) => (
             <ArticleCard key={article.slug} {...article} />
           ))}
         </div>

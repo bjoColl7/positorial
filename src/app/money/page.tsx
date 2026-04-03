@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import ArticleCard from "@/components/ArticleCard";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import { client } from "../../../sanity/lib/client";
+import { articlesByCategoryQuery } from "../../../sanity/lib/queries";
+import { formatArticleForCard, SanityArticle } from "../../../sanity/lib/helpers";
 
 export const metadata: Metadata = {
   title: "Money & Finances",
@@ -8,7 +11,7 @@ export const metadata: Metadata = {
     "Master your money with practical advice on budgeting, investing, debt payoff, and building long-term wealth.",
 };
 
-const moneyArticles = [
+const fallbackArticles = [
   {
     title: "7 Money Habits That Changed My Financial Future",
     excerpt: "Small daily habits compound into massive results. These are the money habits that took me from paycheck to paycheck to building real wealth.",
@@ -17,6 +20,8 @@ const moneyArticles = [
     date: "Mar 18, 2026",
     readTime: "6 min read",
     categoryColor: "bg-primary-500 text-primary-700",
+    thumbnailGradient: "from-primary-100 to-primary-200",
+    thumbnailIcon: "💰",
   },
   {
     title: "How to Build an Emergency Fund From Scratch",
@@ -26,6 +31,8 @@ const moneyArticles = [
     date: "Mar 9, 2026",
     readTime: "7 min read",
     categoryColor: "bg-primary-500 text-primary-700",
+    thumbnailGradient: "from-primary-100 to-primary-200",
+    thumbnailIcon: "🏦",
   },
   {
     title: "Index Funds 101: The Simplest Way to Start Investing",
@@ -35,6 +42,8 @@ const moneyArticles = [
     date: "Feb 28, 2026",
     readTime: "8 min read",
     categoryColor: "bg-primary-500 text-primary-700",
+    thumbnailGradient: "from-primary-100 to-primary-200",
+    thumbnailIcon: "📈",
   },
   {
     title: "The Debt Snowball vs. Avalanche Method",
@@ -44,6 +53,8 @@ const moneyArticles = [
     date: "Feb 20, 2026",
     readTime: "6 min read",
     categoryColor: "bg-primary-500 text-primary-700",
+    thumbnailGradient: "from-primary-100 to-primary-200",
+    thumbnailIcon: "💳",
   },
   {
     title: "Side Hustle Ideas That Actually Pay in 2026",
@@ -53,6 +64,8 @@ const moneyArticles = [
     date: "Feb 14, 2026",
     readTime: "10 min read",
     categoryColor: "bg-primary-500 text-primary-700",
+    thumbnailGradient: "from-primary-100 to-primary-200",
+    thumbnailIcon: "💼",
   },
   {
     title: "Understanding Your Credit Score (And How to Improve It)",
@@ -62,6 +75,8 @@ const moneyArticles = [
     date: "Feb 7, 2026",
     readTime: "7 min read",
     categoryColor: "bg-primary-500 text-primary-700",
+    thumbnailGradient: "from-primary-100 to-primary-200",
+    thumbnailIcon: "📊",
   },
 ];
 
@@ -76,7 +91,19 @@ const topics = [
   { label: "Tax Tips", count: 2 },
 ];
 
-export default function MoneyPage() {
+export const revalidate = 60;
+
+export default async function MoneyPage() {
+  let articles = fallbackArticles;
+  try {
+    const sanityArticles: SanityArticle[] = await client.fetch(articlesByCategoryQuery, { category: "money" });
+    if (sanityArticles && sanityArticles.length > 0) {
+      articles = sanityArticles.map(formatArticleForCard);
+    }
+  } catch {
+    // Sanity not connected yet, use fallback
+  }
+
   return (
     <>
       {/* Hero */}
@@ -124,7 +151,7 @@ export default function MoneyPage() {
           Latest in Money & Finances
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {moneyArticles.map((article) => (
+          {articles.map((article) => (
             <ArticleCard key={article.slug} {...article} />
           ))}
         </div>

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import ArticleCard from "@/components/ArticleCard";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import { client } from "../../../sanity/lib/client";
+import { allArticlesQuery } from "../../../sanity/lib/queries";
+import { formatArticleForCard, SanityArticle } from "../../../sanity/lib/helpers";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -8,7 +11,8 @@ export const metadata: Metadata = {
     "All articles on money, health, and personal development. Fresh insights published weekly.",
 };
 
-const allArticles = [
+// Fallback hardcoded articles (shown when Sanity has no content yet)
+const fallbackArticles = [
   {
     title: "7 Money Habits That Changed My Financial Future",
     excerpt: "Small daily habits compound into massive results. These are the money habits that took me from paycheck to paycheck to building real wealth.",
@@ -17,6 +21,8 @@ const allArticles = [
     date: "Mar 18, 2026",
     readTime: "6 min read",
     categoryColor: "bg-primary-500 text-primary-700",
+    thumbnailGradient: "from-primary-100 to-primary-200",
+    thumbnailIcon: "💰",
   },
   {
     title: "The Morning Routine Science Says Actually Works",
@@ -26,6 +32,8 @@ const allArticles = [
     date: "Mar 15, 2026",
     readTime: "8 min read",
     categoryColor: "bg-sage-500 text-sage-700",
+    thumbnailGradient: "from-sage-100 to-sage-200",
+    thumbnailIcon: "🧘",
   },
   {
     title: "Why Most Goal-Setting Fails (And What to Do Instead)",
@@ -35,6 +43,8 @@ const allArticles = [
     date: "Mar 12, 2026",
     readTime: "5 min read",
     categoryColor: "bg-warm-500 text-warm-700",
+    thumbnailGradient: "from-warm-100 to-warm-200",
+    thumbnailIcon: "🎯",
   },
   {
     title: "How to Build an Emergency Fund From Scratch",
@@ -44,6 +54,8 @@ const allArticles = [
     date: "Mar 9, 2026",
     readTime: "7 min read",
     categoryColor: "bg-primary-500 text-primary-700",
+    thumbnailGradient: "from-primary-100 to-primary-200",
+    thumbnailIcon: "🏦",
   },
   {
     title: "The Anti-Diet Approach to Eating Well",
@@ -53,6 +65,8 @@ const allArticles = [
     date: "Mar 6, 2026",
     readTime: "6 min read",
     categoryColor: "bg-sage-500 text-sage-700",
+    thumbnailGradient: "from-sage-100 to-sage-200",
+    thumbnailIcon: "🥗",
   },
   {
     title: "Digital Minimalism: Reclaim Your Focus",
@@ -62,37 +76,25 @@ const allArticles = [
     date: "Mar 3, 2026",
     readTime: "5 min read",
     categoryColor: "bg-warm-500 text-warm-700",
-  },
-  {
-    title: "Index Funds 101: The Simplest Way to Start Investing",
-    excerpt: "You don't need to be a Wall Street expert. Learn how index funds work and why they're the go-to choice for long-term wealth building.",
-    category: "Money",
-    slug: "index-funds-101",
-    date: "Feb 28, 2026",
-    readTime: "8 min read",
-    categoryColor: "bg-primary-500 text-primary-700",
-  },
-  {
-    title: "Sleep Optimization: Your #1 Health Hack",
-    excerpt: "Better sleep improves everything — cognition, mood, metabolism, and longevity. Here are the evidence-based strategies that actually help.",
-    category: "Health",
-    slug: "sleep-optimization",
-    date: "Feb 25, 2026",
-    readTime: "9 min read",
-    categoryColor: "bg-sage-500 text-sage-700",
-  },
-  {
-    title: "The Power of Journaling: A Beginner's Guide",
-    excerpt: "Journaling isn't just for writers. Discover how 10 minutes a day of writing can transform your clarity, creativity, and emotional health.",
-    category: "Growth",
-    slug: "journaling-beginners-guide",
-    date: "Feb 22, 2026",
-    readTime: "6 min read",
-    categoryColor: "bg-warm-500 text-warm-700",
+    thumbnailGradient: "from-warm-100 to-warm-200",
+    thumbnailIcon: "📵",
   },
 ];
 
-export default function BlogPage() {
+export const revalidate = 60; // Revalidate every 60 seconds
+
+export default async function BlogPage() {
+  // Try to fetch from Sanity, fall back to hardcoded data
+  let articles = fallbackArticles;
+  try {
+    const sanityArticles: SanityArticle[] = await client.fetch(allArticlesQuery);
+    if (sanityArticles && sanityArticles.length > 0) {
+      articles = sanityArticles.map(formatArticleForCard);
+    }
+  } catch {
+    // Sanity not connected yet, use fallback
+  }
+
   return (
     <>
       {/* Hero */}
@@ -111,7 +113,7 @@ export default function BlogPage() {
       </section>
 
       {/* Filter tabs */}
-      <section className="section-padding py-8 border-b border-warm-100 sticky top-16 lg:top-20 bg-cream-50/95 backdrop-blur-sm z-40">
+      <section className="section-padding py-8 border-b border-cream-200 sticky top-16 lg:top-20 bg-cream-50/95 backdrop-blur-sm z-40">
         <div className="flex gap-2 overflow-x-auto pb-1">
           {["All", "Money", "Health", "Growth"].map((tab, i) => (
             <button
@@ -119,7 +121,7 @@ export default function BlogPage() {
               className={`px-5 py-2.5 text-sm font-medium rounded-full whitespace-nowrap transition-colors ${
                 i === 0
                   ? "bg-gray-900 text-white"
-                  : "bg-white text-gray-600 border border-warm-200 hover:border-gray-300"
+                  : "bg-white text-gray-600 border border-cream-200 hover:border-gray-300"
               }`}
             >
               {tab}
@@ -131,7 +133,7 @@ export default function BlogPage() {
       {/* Articles Grid */}
       <section className="section-padding py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {allArticles.map((article) => (
+          {articles.map((article) => (
             <ArticleCard key={article.slug} {...article} />
           ))}
         </div>

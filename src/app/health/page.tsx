@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import ArticleCard from "@/components/ArticleCard";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import { client } from "../../../sanity/lib/client";
+import { articlesByCategoryQuery } from "../../../sanity/lib/queries";
+import { formatArticleForCard, SanityArticle } from "../../../sanity/lib/helpers";
 
 export const metadata: Metadata = {
   title: "Health & Wellness",
@@ -8,7 +11,7 @@ export const metadata: Metadata = {
     "Science-backed insights on nutrition, fitness, mental health, and sleep to help you feel your best every day.",
 };
 
-const healthArticles = [
+const fallbackArticles = [
   {
     title: "The Morning Routine Science Says Actually Works",
     excerpt: "Forget the 4 AM club hype. Here's what research actually says about building a morning routine that boosts energy, focus, and mood all day.",
@@ -17,6 +20,8 @@ const healthArticles = [
     date: "Mar 15, 2026",
     readTime: "8 min read",
     categoryColor: "bg-sage-500 text-sage-700",
+    thumbnailGradient: "from-sage-100 to-sage-200",
+    thumbnailIcon: "🧘",
   },
   {
     title: "The Anti-Diet Approach to Eating Well",
@@ -26,6 +31,8 @@ const healthArticles = [
     date: "Mar 6, 2026",
     readTime: "6 min read",
     categoryColor: "bg-sage-500 text-sage-700",
+    thumbnailGradient: "from-sage-100 to-sage-200",
+    thumbnailIcon: "🥗",
   },
   {
     title: "Sleep Optimization: Your #1 Health Hack",
@@ -35,6 +42,8 @@ const healthArticles = [
     date: "Feb 25, 2026",
     readTime: "9 min read",
     categoryColor: "bg-sage-500 text-sage-700",
+    thumbnailGradient: "from-sage-100 to-sage-200",
+    thumbnailIcon: "😴",
   },
   {
     title: "Strength Training for Beginners: A Complete Guide",
@@ -44,6 +53,8 @@ const healthArticles = [
     date: "Feb 18, 2026",
     readTime: "12 min read",
     categoryColor: "bg-sage-500 text-sage-700",
+    thumbnailGradient: "from-sage-100 to-sage-200",
+    thumbnailIcon: "💪",
   },
   {
     title: "Managing Stress Without Burning Out",
@@ -53,6 +64,8 @@ const healthArticles = [
     date: "Feb 10, 2026",
     readTime: "7 min read",
     categoryColor: "bg-sage-500 text-sage-700",
+    thumbnailGradient: "from-sage-100 to-sage-200",
+    thumbnailIcon: "🧠",
   },
   {
     title: "Supplements Worth Taking (And Ones to Skip)",
@@ -62,6 +75,8 @@ const healthArticles = [
     date: "Feb 3, 2026",
     readTime: "8 min read",
     categoryColor: "bg-sage-500 text-sage-700",
+    thumbnailGradient: "from-sage-100 to-sage-200",
+    thumbnailIcon: "💊",
   },
 ];
 
@@ -75,7 +90,19 @@ const topics = [
   { label: "Recovery", count: 2 },
 ];
 
-export default function HealthPage() {
+export const revalidate = 60;
+
+export default async function HealthPage() {
+  let articles = fallbackArticles;
+  try {
+    const sanityArticles: SanityArticle[] = await client.fetch(articlesByCategoryQuery, { category: "health" });
+    if (sanityArticles && sanityArticles.length > 0) {
+      articles = sanityArticles.map(formatArticleForCard);
+    }
+  } catch {
+    // Sanity not connected yet, use fallback
+  }
+
   return (
     <>
       {/* Hero */}
@@ -123,7 +150,7 @@ export default function HealthPage() {
           Latest in Health & Wellness
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {healthArticles.map((article) => (
+          {articles.map((article) => (
             <ArticleCard key={article.slug} {...article} />
           ))}
         </div>

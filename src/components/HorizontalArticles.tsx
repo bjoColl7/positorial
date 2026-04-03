@@ -1,39 +1,17 @@
 import Link from "next/link";
 
-const recentPosts = [
-  {
-    title: "How to Build an Emergency Fund From Scratch",
-    excerpt: "Starting from zero? No problem. A step-by-step guide to building your financial safety net, even on a tight budget.",
-    category: "Money",
-    slug: "emergency-fund-guide",
-    date: "Mar 9, 2026",
-    readTime: "7 min read",
-    gradient: "from-primary-100 to-primary-200",
-    icon: "💰",
-  },
-  {
-    title: "The Anti-Diet Approach to Eating Well",
-    excerpt: "Ditch restrictive diets for good. Discover intuitive, sustainable eating habits that nourish your body and mind without the guilt.",
-    category: "Health",
-    slug: "anti-diet-eating",
-    date: "Mar 6, 2026",
-    readTime: "6 min read",
-    gradient: "from-sage-100 to-sage-200",
-    icon: "🥗",
-  },
-  {
-    title: "Digital Minimalism: Reclaim Your Focus",
-    excerpt: "Your phone isn't the enemy — your habits are. Practical strategies for using technology intentionally and getting your focus back.",
-    category: "Growth",
-    slug: "digital-minimalism",
-    date: "Mar 3, 2026",
-    readTime: "5 min read",
-    gradient: "from-warm-100 to-warm-200",
-    icon: "📵",
-  },
-];
+interface HorizontalArticle {
+  title: string;
+  excerpt: string;
+  category: string;
+  slug: string;
+  date: string;
+  readTime: string;
+  gradient: string;
+  icon: string;
+}
 
-export default function HorizontalArticles() {
+export default function HorizontalArticles({ articles }: { articles: HorizontalArticle[] }) {
   return (
     <section className="section-padding py-20">
       <div className="flex items-center gap-3 mb-10">
@@ -45,7 +23,7 @@ export default function HorizontalArticles() {
       </div>
 
       <div className="space-y-6">
-        {recentPosts.map((post) => (
+        {articles.map((post) => (
           <Link key={post.slug} href={`/blog/${post.slug}`} className="group block">
             <article className="bg-white rounded-2xl border border-cream-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
               <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-0">
