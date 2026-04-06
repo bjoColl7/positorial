@@ -46,9 +46,7 @@ export default defineType({
       name: "mainImage",
       title: "Cover Image",
       type: "image",
-      options: {
-        hotspot: true,
-      },
+      options: { hotspot: true },
       fields: [
         {
           name: "alt",
@@ -88,9 +86,7 @@ export default defineType({
       title: "Tags",
       type: "array",
       of: [{ type: "string" }],
-      options: {
-        layout: "tags",
-      },
+      options: { layout: "tags" },
       description: 'e.g. "budgeting", "investing", "mindset"',
     }),
     defineField({
@@ -118,7 +114,7 @@ export default defineType({
               { title: "Italic", value: "em" },
               { title: "Underline", value: "underline" },
               { title: "Strikethrough", value: "strike-through" },
-              { title: "Inline Code", value: "code" },
+              { title: "Code", value: "code" },
             ],
             annotations: [
               {
@@ -137,14 +133,12 @@ export default defineType({
                     name: "blank",
                     type: "boolean",
                     initialValue: true,
-                    description: "Turn on to open link in a new browser tab",
                   },
                 ],
               },
             ],
           },
         },
-        // Inline images within the article body
         {
           type: "image",
           options: { hotspot: true },
@@ -159,18 +153,16 @@ export default defineType({
               name: "caption",
               title: "Caption",
               type: "string",
-              description: "Optional caption shown below the image",
             },
           ],
         },
-        // Callout / Tip box
         {
           type: "object",
           name: "callout",
           title: "Callout Box",
           fields: [
             {
-              name: "type",
+              name: "calloutType",
               title: "Box Type",
               type: "string",
               options: {
@@ -193,20 +185,7 @@ export default defineType({
               description: "The text inside the callout box",
             },
           ],
-          preview: {
-            select: { type: "type", content: "content" },
-            prepare({ type, content }: { type: string; content: string }) {
-              const icons: Record<string, string> = {
-                tip: "💡", warning: "⚠️", takeaway: "📌", pro: "🔥", fact: "📖",
-              };
-              return {
-                title: `${icons[type] || "📦"} Callout Box`,
-                subtitle: content,
-              };
-            },
-          },
         },
-        // Section divider
         {
           type: "object",
           name: "divider",
@@ -227,17 +206,6 @@ export default defineType({
               initialValue: "line",
             },
           ],
-          preview: {
-            select: { style: "style" },
-            prepare({ style }: { style: string }) {
-              const labels: Record<string, string> = {
-                line: "─────────────",
-                dotted: "· · · · · · ·",
-                stars: "✦  ✦  ✦",
-              };
-              return { title: `Section Divider: ${labels[style] || "Line"}` };
-            },
-          },
         },
       ],
     }),
@@ -253,12 +221,6 @@ export default defineType({
             { name: "url", title: "Affiliate URL", type: "url" },
             { name: "description", title: "Short Description", type: "string" },
           ],
-          preview: {
-            select: { label: "label", description: "description" },
-            prepare({ label, description }: { label: string; description: string }) {
-              return { title: label, subtitle: description };
-            },
-          },
         },
       ],
       description: "Optional affiliate product links shown at the bottom of the article",
