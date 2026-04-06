@@ -50,6 +50,15 @@ const defaultPost = {
   ],
 };
 
+// Callout box styles per type
+const calloutStyles: Record<string, { bg: string; border: string; icon: string; label: string }> = {
+  tip:      { bg: "bg-primary-50",  border: "border-primary-200", icon: "💡", label: "Tip" },
+  warning:  { bg: "bg-amber-50",    border: "border-amber-200",   icon: "⚠️", label: "Warning" },
+  takeaway: { bg: "bg-sage-50",     border: "border-sage-200",    icon: "📌", label: "Key Takeaway" },
+  pro:      { bg: "bg-warm-50",     border: "border-warm-200",    icon: "🔥", label: "Pro Tip" },
+  fact:     { bg: "bg-blue-50",     border: "border-blue-200",    icon: "📖", label: "Did You Know?" },
+};
+
 // Portable Text components for rendering Sanity rich text
 const portableTextComponents = {
   block: {
@@ -59,19 +68,113 @@ const portableTextComponents = {
     h3: ({ children }: { children?: React.ReactNode }) => (
       <h3 className="text-xl font-display font-bold text-gray-900 mt-8 mb-3">{children}</h3>
     ),
+    h4: ({ children }: { children?: React.ReactNode }) => (
+      <h4 className="text-lg font-display font-bold text-gray-900 mt-6 mb-2">{children}</h4>
+    ),
     normal: ({ children }: { children?: React.ReactNode }) => (
       <p className="text-gray-600 leading-relaxed mb-6">{children}</p>
     ),
     blockquote: ({ children }: { children?: React.ReactNode }) => (
-      <blockquote className="border-l-4 border-primary-300 pl-6 my-6 italic text-gray-500">{children}</blockquote>
+      <blockquote className="border-l-4 border-primary-300 pl-6 my-6 italic text-gray-500 text-lg">{children}</blockquote>
+    ),
+  },
+  list: {
+    bullet: ({ children }: { children?: React.ReactNode }) => (
+      <ul className="list-disc list-outside pl-6 mb-6 space-y-2 text-gray-600">{children}</ul>
+    ),
+    number: ({ children }: { children?: React.ReactNode }) => (
+      <ol className="list-decimal list-outside pl-6 mb-6 space-y-2 text-gray-600">{children}</ol>
+    ),
+  },
+  listItem: {
+    bullet: ({ children }: { children?: React.ReactNode }) => (
+      <li className="leading-relaxed">{children}</li>
+    ),
+    number: ({ children }: { children?: React.ReactNode }) => (
+      <li className="leading-relaxed">{children}</li>
     ),
   },
   marks: {
-    link: ({ children, value }: { children?: React.ReactNode; value?: { href: string } }) => (
-      <a href={value?.href} className="text-primary-600 underline hover:text-primary-700" target="_blank" rel="noopener noreferrer">
+    strong: ({ children }: { children?: React.ReactNode }) => (
+      <strong className="font-bold text-gray-900">{children}</strong>
+    ),
+    em: ({ children }: { children?: React.ReactNode }) => (
+      <em className="italic">{children}</em>
+    ),
+    underline: ({ children }: { children?: React.ReactNode }) => (
+      <span className="underline">{children}</span>
+    ),
+    "strike-through": ({ children }: { children?: React.ReactNode }) => (
+      <span className="line-through text-gray-400">{children}</span>
+    ),
+    code: ({ children }: { children?: React.ReactNode }) => (
+      <code className="bg-gray-100 text-primary-700 font-mono text-sm px-1.5 py-0.5 rounded">{children}</code>
+    ),
+    link: ({ children, value }: { children?: React.ReactNode; value?: { href: string; blank?: boolean } }) => (
+      <a
+        href={value?.href}
+        className="text-primary-600 underline hover:text-primary-700 transition-colors"
+        target={value?.blank ? "_blank" : undefined}
+        rel={value?.blank ? "noopener noreferrer" : undefined}
+      >
         {children}
       </a>
     ),
+  },
+  types: {
+    // Images inside the article body
+    image: ({ value }: { value?: { asset?: { url?: string }; alt?: string; caption?: string } }) => {
+      if (!value?.asset?.url) return null;
+      return (
+        <figure className="my-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={value.asset.url}
+            alt={value.alt || "Article image"}
+            className="w-full rounded-xl shadow-sm"
+          />
+          {value.caption && (
+            <figcaption className="text-center text-sm text-gray-400 mt-2 italic">
+              {value.caption}
+            </figcaption>
+          )}
+        </figure>
+      );
+    },
+    // Callout / tip boxes
+    callout: ({ value }: { value?: { calloutType?: string; content?: string } }) => {
+      const type = value?.calloutType || "tip";
+      const style = calloutStyles[type] || calloutStyles.tip;
+      return (
+        <div className={`my-6 rounded-xl border ${style.bg} ${style.border} p-5 flex gap-4`}>
+          <span className="text-2xl shrink-0 mt-0.5">{style.icon}</span>
+          <div>
+            <p className="font-semibold text-gray-900 text-sm uppercase tracking-wide mb-1">
+              {style.label}
+            </p>
+            <p className="text-gray-700 leading-relaxed">{value?.content}</p>
+          </div>
+        </div>
+      );
+    },
+    // Section dividers
+    divider: ({ value }: { value?: { style?: string } }) => {
+      const style = value?.style || "line";
+      if (style === "stars") {
+        return (
+          <div className="my-10 text-center text-gray-300 text-xl tracking-widest select-none">
+            ✦&nbsp;&nbsp;✦&nbsp;&nbsp;✦
+          </div>
+        );
+      }
+      return (
+        <hr
+          className={`my-10 border-0 border-t ${
+            style === "dotted" ? "border-dotted border-gray-300" : "border-gray-200"
+          }`}
+        />
+      );
+    },
   },
 };
 
